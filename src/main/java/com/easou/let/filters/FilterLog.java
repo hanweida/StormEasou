@@ -9,7 +9,16 @@ package com.easou.let.filters;
  */
 public interface FilterLog {
 
+    /**
+     * Init.
+     */
     public void init();
 
+    /**
+     * Validate boolean.
+     *
+     * @param line the line
+     * @return the boolean
+     */
     public boolean validate(String line);
 }

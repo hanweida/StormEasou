@@ -13,6 +13,11 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class HbaseUtilTest {
+    /**
+     * Test.
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void test() throws IOException {
         //MediaIncomeDao hBaseDao = MediaIncomeDao.getInstance();
@@ -23,6 +28,11 @@ public class HbaseUtilTest {
         //hBaseDao.putDatas("t_showclicklog", "10", "1234", "info".getBytes(), "a".getBytes());
     }
 
+    /**
+     * Test get.
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void testGet() throws IOException {
         /*HBaseDao hBaseDao = HBaseDao.getInstance();

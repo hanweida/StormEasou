@@ -19,6 +19,12 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class Statics {
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws IOException the io exception
+     */
     public static void main(String[] args) throws IOException {
         List<String> pathList = new ArrayList<String>();
         pathList = FileUtils.readfile("D:\\join0116\\join.0116", pathList);

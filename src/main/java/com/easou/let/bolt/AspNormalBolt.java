@@ -10,6 +10,7 @@ import backtype.storm.tuple.Values;
 import com.easou.let.config.EasouConstants;
 import com.easou.let.pojo.ShowClickLog;
 import com.easou.let.utils.FileUtils;
+import com.easou.let.utils.SimpleDateUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,24 +32,32 @@ import java.util.Map;
 public class AspNormalBolt implements IRichBolt {
     private Logger Log = LoggerFactory.getLogger(AspNormalBolt.class);
     private OutputCollector collector;
-    protected SimpleDateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
+    /**
+     * The Ymd.
+     */
+    protected SimpleDateFormat ymd = new SimpleDateFormat("yyyyMMdd");
+    /**
+     * The Now date.
+     */
     Calendar nowDate = Calendar.getInstance();
-    //nowDate.add(Calendar.HOUR_OF_DAY, -1);
+    /**
+     * The constant i.
+     */
+//nowDate.add(Calendar.HOUR_OF_DAY, -1);
     //nowDate.add(Calendar.HOUR_OF_DAY, -18);
     public static int i = 0;
 
-    @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;
     }
 
-    @Override
     public void execute(Tuple tuple) {
         //获得asp 一条数据
         String line = tuple.getString(0);
-        String date = "20161109";
+        Date date = new Date();
+
         //解析数据
-        List<ShowClickLog> list = aspParse(line, date);
+        List<ShowClickLog> list = aspParse(line, null);
         if(null != list){
             for(ShowClickLog showClickLog : list){
                 collector.emit(tuple, new Values(showClickLog.toKeyValue(), showClickLog));
@@ -58,7 +68,11 @@ public class AspNormalBolt implements IRichBolt {
     }
 
     /**
+     * Asp parse list.
      *
+     * @param line the line
+     * @param date the date
+     * @return the list
      */
     public List<ShowClickLog> aspParse(String line, String date){
         //验证日志数据是否满足,不满足返回空
@@ -72,7 +86,7 @@ public class AspNormalBolt implements IRichBolt {
         if(line.contains(EasouConstants.ASP_FLAG2)){
             int showVersion = FileUtils.lineAnalise2Int(line, EasouConstants.ASP_FLAG2);
             //包含kdad 或者ad 段
-            if(null!=line && (line.contains(EasouConstants.ASP_FLAG) || line.contains(EasouConstants.ASP_FLAG3))){
+            if(null != line && (line.contains(EasouConstants.ASP_FLAG) || line.contains(EasouConstants.ASP_FLAG3))){
                 list = new ArrayList<ShowClickLog>();
                 if(line.contains(EasouConstants.ASP_FLAG)){
                     ads = line.substring(line.indexOf(EasouConstants.ASP_FLAG) + EasouConstants.ASP_FLAG.length(), line.length());
@@ -84,13 +98,19 @@ public class AspNormalBolt implements IRichBolt {
                     }
                     ads += FileUtils.lineAnalise(line, EasouConstants.ASP_FLAG3);
                 }
-                //date =  year+line.substring(0,40).split(" ")[1];
+                //获得当前日期
+                //String dateStr = ymd.format(date);
+                int currentYear = SimpleDateUtils.getCurrentYear();
+                date = currentYear+"-" + line.substring(0,40).split(" ")[1];
+                //if(){}
+                //date = year+line.substring(0,40).split(" ")[1];
                 int maxItemCount = 0;
                 List<String> adStrGoodList = new ArrayList<String>();
                 List<String> adStrList = new ArrayList<String>();
                 //如果包含多条广告 用"|"分割
                 if(ads.contains(EasouConstants.MUL_AD_FlAG)){
                     String [] aspValues = ads.split(EasouConstants.LOG_AD_DELIMITER);
+                    /*按 /t 分隔符 分割，获得*/
                     for(String aspValue : aspValues){
                         String[] adPropertyValueArray = aspValue.split(EasouConstants.AD_PROPERTY_DELIMITER);
                         if(adPropertyValueArray.length > maxItemCount){
@@ -98,6 +118,7 @@ public class AspNormalBolt implements IRichBolt {
                         }
                     }
 
+                    //获得所有的日志数组，放到list中
                     for(String aspValue : aspValues){
                         String[] adPropertyValueArray = aspValue.split(EasouConstants.AD_PROPERTY_DELIMITER);
                         if(adPropertyValueArray.length >= maxItemCount){
@@ -105,6 +126,7 @@ public class AspNormalBolt implements IRichBolt {
                         }
                     }
 
+                    //将有效日志数组添加adStrGoodList
                     for(String ad : adStrList){
                         if(null != ad && !"".equals(ad)){
                             adStrGoodList.add(ad);
@@ -177,18 +199,15 @@ public class AspNormalBolt implements IRichBolt {
             return null;
         }
     }
-    @Override
     public void cleanup() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
         outputFieldsDeclarer.declare(new Fields("key", "showclicklog"));
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
     public Map<String, Object> getComponentConfiguration() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

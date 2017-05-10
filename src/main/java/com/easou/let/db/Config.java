@@ -15,7 +15,13 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class Config {
+    /**
+     * The constant configuration.
+     */
     public static Configuration configuration;
+    /**
+     * The constant con.
+     */
     public static Connection con;
     static {
         configuration = HBaseConfiguration.create();

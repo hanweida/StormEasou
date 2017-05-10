@@ -18,6 +18,13 @@ public class DBConnectUtil {
     private static final Configuration conf = HBaseConfiguration.create();
 
     private static Connection connection = null;
+
+    /**
+     * Open connection.
+     *
+     * @return the connection
+     * @throws IOException the io exception
+     */
     public static Connection open() throws IOException {
         conf.set("hbase.zookeeper.property.clientPort", "2181");
         conf.set("hbase.zookeeper.quorum", "hadoop1");

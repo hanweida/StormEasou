@@ -15,6 +15,11 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 public class LockCuratorSrc {
     private static CuratorFramework client = null;
 
+    /**
+     * Get cf curator framework.
+     *
+     * @return the curator framework
+     */
     public synchronized  static CuratorFramework getCF(){
         if(client==null){
             try {

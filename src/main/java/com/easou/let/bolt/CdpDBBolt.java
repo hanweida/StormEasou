@@ -6,6 +6,7 @@ import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
 import com.easou.let.pojo.*;
+import com.easou.let.utils.PropertiesUtils;
 import com.easou.let.utils.SimpleDateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,16 +31,19 @@ import java.util.TimerTask;
  * Time: 下午3:21
  * To change this template use File | Settings | File Templates.
  */
-public class CdpHbaseBolt implements IRichBolt {
-    private static final Logger LOG = LoggerFactory.getLogger(CdpHbaseBolt.class);
+public class CdpDBBolt implements IRichBolt {
+    private static final Logger LOG = LoggerFactory.getLogger(CdpDBBolt.class);
     //正在持久化总数据
-    private boolean clean = false;
+    private boolean cleaning = false;
     private Map<String, ShowClickLog> memcachMap = null;
     private List<ShowClickLog> cachList = null;
 
     private TaskQueue<ShowClickLog> taskQueue = null;
     private OutputCollector collector;
 
+    /**
+     * Wite file.
+     */
     public void witeFile(){
 
     }
@@ -47,51 +51,54 @@ public class CdpHbaseBolt implements IRichBolt {
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         //To change body of implemented methods use File | Settings | File Templates.
         this.collector = collector;
-        clean = true;
+        cleaning = true;
         memcachMap = new HashMap<String, ShowClickLog>();
         cachList = new ArrayList<ShowClickLog>();
         taskQueue = new TaskQueue<ShowClickLog>();
 
         Timer timer = new Timer();
-        timer.schedule(new CdpHbaseBolt.saveTimer(), new Date(), 30000);
+        timer.schedule(new CdpDBBolt.saveTimer(), new Date(), 30000);
     }
 
     /**
-     * 定时处理缓存数据，在处理数据期间，将clean 设置为true。
+     * 定时处理缓存数据，在处理数据期间，将clean字段 设置为true。
      */
     class saveTimer extends TimerTask{
         @Override
         public void run() {
             LOG.info("saveTimer Start：----------------------" + SimpleDateUtils.getCurrentTime());
             //To change body of implemented methods use File | Settings | File Templates.
-            clean = false;
+            cleaning = true;
             LOG.info("memcachMapSize：----------------------" + memcachMap.size());
             if(!memcachMap.isEmpty()){
                 Iterator iterator = memcachMap.values().iterator();
+                //循环 memcachMap 的values，将showClickLog 对象放到task任务列表中
                 while (iterator.hasNext()){
                     taskQueue.addItem((ShowClickLog)iterator.next());
                 }
                 List<Thread> threadList = new ArrayList<Thread>();
+                //启动4个线程，存储缓存数据
                 for(int i = 0; i< 4 ;i++){
                     Thread thread = new Thread(new Runnable() {
                         public void run() {
-                            while (true){
-                                ShowClickLog showClickLog = taskQueue.popItem();
-                                if(null == showClickLog){
-                                    taskQueue = new TaskQueue<ShowClickLog>();
-                                    memcachMap =new HashMap<String, ShowClickLog>();
-                                    break;
-                                } else {
-                                    if(showClickLog.getUserId() != 8704){
-                                        System.out.println(showClickLog.getCharge());
-                                        try {
-                                            witeFile(showClickLog.getCharge() + "");
-                                        } catch (IOException e) {
-                                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                        }
+                        while (true){
+                            ShowClickLog showClickLog = taskQueue.popItem();
+                            if(null == showClickLog){
+                                taskQueue = new TaskQueue<ShowClickLog>();
+                                memcachMap =new HashMap<String, ShowClickLog>();
+                                break;
+                            } else {
+                                if(showClickLog.getUserId() != 8704){
+                                    System.out.println(showClickLog.getCharge());
+                                    try {
+                                        //持久化数据
+                                        witeData(showClickLog.getCharge() + "");
+                                    } catch (IOException e) {
+                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                                     }
                                 }
                             }
+                        }
                         }
                     });
                     threadList.add(thread);
@@ -106,7 +113,7 @@ public class CdpHbaseBolt implements IRichBolt {
                 }
             }
             LOG.info("saveTimer End：----------------------" + SimpleDateUtils.getCurrentTime());
-            clean = true;
+            cleaning = false;
         }
     }
 
@@ -125,8 +132,27 @@ public class CdpHbaseBolt implements IRichBolt {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public static void witeFile(String str) throws IOException {
-        File file = new File("D:\\easouLog\\cdplog\\click_data.result");
+    /**
+     * 持久化数据
+     *
+     * @param str the str
+     * @throws IOException the io exception
+     */
+    public void witeData(String str) throws IOException {
+        //写在文件中
+        witeFile(str);
+    }
+
+    /**
+     * Wite file.
+     *
+     * @param str the str
+     * @throws IOException the io exception
+     */
+    public void witeFile(String str) throws IOException {
+        PropertiesUtils propertiesUtils = PropertiesUtils.getInstance();
+        String cdpDBFilePah = propertiesUtils.getProperties("cdpDBFilePah");
+        File file = new File(cdpDBFilePah);
         if(!file.exists()){
             file.createNewFile();
         }
@@ -138,14 +164,17 @@ public class CdpHbaseBolt implements IRichBolt {
     }
 
     /**
-     * 该方法为将数据整合到内存中，将相同的key 合并数据，如果正在数据处理期间（定时器启动时），数据将缓存到cachList中
-     * @param key
-     * @param showClickLog
-     * @param input
+     * Memqach data.
+     * 该方法为将数据整合到内存中 ，将相同的key 合并数据，如果正在数据处理期间（定时器启动时），数据将缓存到cachList中
+     *
+     * @param key          the key
+     * @param showClickLog the show click log
+     * @param input        the input
      */
     public void memcachData (String key, ShowClickLog showClickLog, Tuple input) {
+
         //如果线程正在执行，持久化 总数据中时，不能合并数据，先保存到缓存列表
-        if(clean){
+        if(!cleaning){
             LOG.info("memcachData：------------" + SimpleDateUtils.getCurrentTime());
             ShowClickLog memShowClick = null;
             if(null == memcachMap ){
@@ -161,7 +190,6 @@ public class CdpHbaseBolt implements IRichBolt {
                     if(null == memcachMap.get(key)){
                         memcachMap.put(key, showClickLog1);
                     } else {
-                        memShowClick = memcachMap.get(key);
                         memShowClick.setClick(showClickLog1.getClick() + memShowClick.getClick());
                         memShowClick.setCharge(showClickLog1.getCharge() + memShowClick.getCharge());
                         memShowClick.setBidCharge(showClickLog1.getBidCharge() + memShowClick.getBidCharge());
@@ -177,45 +205,7 @@ public class CdpHbaseBolt implements IRichBolt {
         collector.ack(input);
     }
 
-    public void saveDate() throws InterruptedException {
-            System.out.println("start time ：" + SimpleDateUtils.getCurrentTime());
-            List<ShowClickLog> showClickLogList = new ArrayList<ShowClickLog>();
-            for(int i = 0 ; i < 100 ; i++){
-                ShowClickLog showClickLog = new ShowClickLog();
-                showClickLog.setClick(i);
-                showClickLogList.add(showClickLog);
-            }
 
-            final TaskQueue<ShowClickLog> taskQueue = new TaskQueue<ShowClickLog>();
-            Iterator iterator = showClickLogList.iterator();
-            while (iterator.hasNext()){
-                taskQueue.addItem((ShowClickLog)iterator.next());
-            }
-
-            List<Thread> threadList = new ArrayList<Thread>();
-            for(int i = 0; i< 4 ;i++){
-                Thread thread = new Thread(new Runnable() {
-                    public void run() {
-                        while (true){
-                            ShowClickLog showClickLog9 = taskQueue.popItem();
-                            if(null == showClickLog9){
-                                break;
-                            } else {
-                                System.out.println(Thread.currentThread().getName() +"："+showClickLog9.getClick());
-                            }
-                        }
-
-                    }
-                });
-                threadList.add(thread);
-                thread.start();
-            }
-            for(Thread thread : threadList){
-                thread.join();
-            }
-            System.out.println("start time ：" + SimpleDateUtils.getCurrentTime());
-            Thread.sleep(10000);
-    }
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         //To change body of implemented methods use File | Settings | File Templates.
     }

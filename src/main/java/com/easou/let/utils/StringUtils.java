@@ -11,8 +11,9 @@ public class StringUtils {
 
     /**
      * 判断字符串是否为空或者空字符串
-     * @param target
-     * @return
+     *
+     * @param target the target
+     * @return boolean
      */
     public static boolean isNullOrEmpty(String target){
         if(null == target || "".equals(target)){

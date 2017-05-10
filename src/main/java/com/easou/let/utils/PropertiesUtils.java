@@ -13,15 +13,25 @@ import java.util.Properties;
  * To change this template use File | Settings | File Templates.
  */
 public class PropertiesUtils{
-    private static String SYSTEM_CONFIG_FILE = "storm-let.properties";
+    private static String SYSTEM_CONFIG_FILE = "application.properties";
 
     //单例
     private static PropertiesUtils stormLetConfiguration;
     private PropertiesUtils(){}
+
+    /**
+     * Get instance properties utils.
+     *
+     * @return the properties utils
+     */
     public  static PropertiesUtils getInstance(){
         stormLetConfiguration = new PropertiesUtils();
         return stormLetConfiguration;
     }
+
+    /**
+     * The constant properties.
+     */
     public static Properties properties = null;
     static {
         InputStream is = null;
@@ -34,7 +44,13 @@ public class PropertiesUtils{
         }
     }
 
-    public static String getProperties(String parameterName){
+    /**
+     * Get properties string.
+     *
+     * @param parameterName the parameter name
+     * @return the string
+     */
+    public String getProperties(String parameterName){
         String value = properties.getProperty(parameterName);
         return value;
     }

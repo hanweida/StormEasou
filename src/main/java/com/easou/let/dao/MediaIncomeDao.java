@@ -24,12 +24,24 @@ import java.util.List;
 public class MediaIncomeDao {
     private static MediaIncomeDao hBaseDao = null;
     private MediaIncomeDao(){}
+
+    /**
+     * Get instance media income dao.
+     *
+     * @return the media income dao
+     */
     public static MediaIncomeDao getInstance(){
         hBaseDao = new MediaIncomeDao();
         return hBaseDao;
     }
 
-    // Hbase获取所有的表信息
+    /**
+     * Gets all tables.
+     *
+     * @return the all tables
+     * @throws IOException the io exception
+     */
+// Hbase获取所有的表信息
     public List getAllTables() throws IOException {
         Connection connection = DBConnectUtil.open();
         Admin admin = connection.getAdmin();
@@ -52,8 +64,12 @@ public class MediaIncomeDao {
 
     /**
      * 添加数据
-     * @param hConnection
-     * @param mediaIncomeAdmin
+     *
+     * @param hConnection      the h connection
+     * @param mediaIncomeAdmin the media income admin
+     * @param column           the column
+     * @param values           the values
+     * @throws IOException the io exception
      */
     public void putDatas(Connection hConnection, MediaIncomeAdmin mediaIncomeAdmin, String[] column, String[] values) throws IOException{
         //date_userid_mediaid _source_adtype_promotiontype
@@ -76,10 +92,10 @@ public class MediaIncomeDao {
 
     /**
      * 查询数据
-     * @param hConnection
-     * @param hConnection
-     * @param mediaIncomeAdmin
-     * @throws IOException
+     *
+     * @param hConnection      the h connection
+     * @param mediaIncomeAdmin the media income admin
+     * @throws IOException the io exception
      */
     public void selectDatas(Connection hConnection, MediaIncomeAdmin mediaIncomeAdmin) throws IOException{
         TableName tableName1 = TableName.valueOf("t_media_income_admin");
@@ -96,15 +112,12 @@ public class MediaIncomeDao {
     }
 
 
-
-
-
-
     /**
      * 添加表
-     * @param hBaseAdmin
-     * @param table
-     * @throws IOException
+     *
+     * @param hBaseAdmin the h base admin
+     * @param table      the table
+     * @throws IOException the io exception
      */
     public void addTable(Admin hBaseAdmin, String table) throws IOException{
         TableName tableName = TableName.valueOf(table);
@@ -118,9 +131,10 @@ public class MediaIncomeDao {
 
     /**
      * 删除表
-     * @param hBaseAdmin
-     * @param tableName
-     * @throws IOException
+     *
+     * @param hBaseAdmin the h base admin
+     * @param tableName  the table name
+     * @throws IOException the io exception
      */
     public void deleteTables(HBaseAdmin hBaseAdmin, String tableName) throws IOException{
         hBaseAdmin.disableTable(tableName);
@@ -129,9 +143,10 @@ public class MediaIncomeDao {
 
     /**
      * 删除表通过 TableName 类
-     * @param hBaseAdmin
-     * @param tableName
-     * @throws IOException
+     *
+     * @param hBaseAdmin the h base admin
+     * @param tableName  the table name
+     * @throws IOException the io exception
      */
     public void deleteTableByTableName(HBaseAdmin hBaseAdmin, String tableName) throws IOException{
         TableName tableName1 = TableName.valueOf(tableName);
@@ -141,9 +156,11 @@ public class MediaIncomeDao {
 
     /**
      * 是否存在表
-     * @param hBaseAdmin
-     * @param tableName
-     * @throws IOException
+     *
+     * @param hBaseAdmin the h base admin
+     * @param tableName  the table name
+     * @return the boolean
+     * @throws IOException the io exception
      */
     public boolean existsTable(Admin hBaseAdmin, String tableName) throws IOException{
         boolean isExists = hBaseAdmin.tableExists(TableName.valueOf(tableName));

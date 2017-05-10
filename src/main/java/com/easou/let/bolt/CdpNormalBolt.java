@@ -6,6 +6,7 @@ import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
+import backtype.storm.tuple.MessageId;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import com.easou.let.pojo.ShowClickLog;
@@ -42,6 +43,8 @@ public class CdpNormalBolt implements IRichBolt {
             System.out.println(SimpleDateUtils.getCurrentTime());
         } else {
             String line = input.getString(0);
+            MessageId messageId = input.getMessageId();
+
             ShowClickLog showClickLog = cdpParge(line);
             if(null != showClickLog){
                 collector.emit(input, new Values(showClickLog.toKeyValue(), showClickLog));
@@ -64,6 +67,12 @@ public class CdpNormalBolt implements IRichBolt {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    /**
+     * Cdp parge show click log.
+     *
+     * @param line the line
+     * @return the show click log
+     */
     public ShowClickLog cdpParge(String line){
         if(StringUtils.isEmpty(line) || "@EE@".equals(line)){
             return null;
@@ -137,6 +146,12 @@ public class CdpNormalBolt implements IRichBolt {
         return showClickLog;
     }
 
+    /**
+     * Is parse boolean.
+     *
+     * @param values the values
+     * @return the boolean
+     */
     protected boolean isParse(String[] values) {
         if(values.length>35){
             if("60".equals(values[34])){//media_type物料类型
@@ -147,6 +162,12 @@ public class CdpNormalBolt implements IRichBolt {
         return true;
     }
 
+    /**
+     * Wite files.
+     *
+     * @param str the str
+     * @throws IOException the io exception
+     */
     public static void witeFiles(String str) throws IOException {
         FileWriter fileWriter = new FileWriter("D:\\easouLog\\cdplog\\click_data.9263052", true);
         PrintWriter printWriter = new PrintWriter(fileWriter);
@@ -155,4 +176,6 @@ public class CdpNormalBolt implements IRichBolt {
         fileWriter.flush();
         printWriter.flush();
     }
+
+
 }

@@ -26,8 +26,6 @@ public class AspLogSpout implements IRichSpout {
     private SpoutOutputCollector collector;
     private boolean completed = false;
 
-
-    @Override
     public void open(Map map, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector) {
         try {
             //此处读取日志目录文件
@@ -38,8 +36,6 @@ public class AspLogSpout implements IRichSpout {
         collector = spoutOutputCollector;
     }
 
-
-    @Override
     public void nextTuple() {
         //读取本地日志文件
         String str;
@@ -56,40 +52,33 @@ public class AspLogSpout implements IRichSpout {
         }
     }
 
-    @Override
     public void ack(Object o) {
         //System.out.println("AspLogSpout OK：" + o);
     }
 
-    @Override
     public void fail(Object o) {
         //System.out.println("AspLogSpout Fail：" + o);
         //System.out.println("Fail：" + o);
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
         outputFieldsDeclarer.declare(new Fields("line"));
     }
 
-    @Override
+    
     public Map<String, Object> getComponentConfiguration() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-
-    @Override
     public void close() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
     public void activate() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
     public void deactivate() {
         //To change body of implemented methods use File | Settings | File Templates.
     }

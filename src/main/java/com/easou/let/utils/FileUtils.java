@@ -23,13 +23,21 @@ public class FileUtils {
 
     /**
      * 验证asp日志
-     * @param line
-     * @return
+     *
+     * @param line the line
+     * @return boolean
      */
     public static boolean validateAspLog(String line){
         return aspLogFilter.validate(line);
     }
 
+    /**
+     * Line analise 2 int int.
+     *
+     * @param line      the line
+     * @param beginFlag the begin flag
+     * @return the int
+     */
     public static int lineAnalise2Int(String line, String beginFlag){
         String temp = line.substring(line.indexOf(beginFlag) + beginFlag.length(), line.indexOf(" ", line.indexOf(beginFlag) + beginFlag.length()));
         return Integer.parseInt(temp);
@@ -39,9 +47,10 @@ public class FileUtils {
      * 截取字符串从开始位置
      * 如果有空格截取到空格字符串
      * 如果没有有空格截取到行末
-     * @param line
-     * @param beginFlag
-     * @return
+     *
+     * @param line      the line
+     * @param beginFlag the begin flag
+     * @return string
      */
     public static String lineAnalise(String line, String beginFlag){
         int index = line.indexOf(" ", line.indexOf(beginFlag) + beginFlag.length());
@@ -54,6 +63,13 @@ public class FileUtils {
         return temp;
     }
 
+    /**
+     * Wite file.
+     *
+     * @param str  the str
+     * @param path the path
+     * @throws IOException the io exception
+     */
     public static void witeFile(String str, String path) throws IOException {
         File file = new File(path);
         if(!file.exists()){
@@ -68,9 +84,10 @@ public class FileUtils {
 
     /**
      * 循环写入
-     * @param list
-     * @param path
-     * @throws IOException
+     *
+     * @param list the list
+     * @param path the path
+     * @throws IOException the io exception
      */
     public static void witeFiles(List<String> list, String path) throws IOException {
         for(String strings : list){
@@ -88,6 +105,13 @@ public class FileUtils {
         }
     }
 
+    /**
+     * Read file string.
+     *
+     * @param filepath the filepath
+     * @return the string
+     * @throws IOException the io exception
+     */
     public static String readFile(String filepath) throws IOException {
         File file= new File(filepath);
         FileReader fileReader = new FileReader(file);
@@ -96,6 +120,15 @@ public class FileUtils {
         return null;
     }
 
+    /**
+     * Readfile list.
+     *
+     * @param filepath the filepath
+     * @param list     the list
+     * @return the list
+     * @throws FileNotFoundException the file not found exception
+     * @throws IOException           the io exception
+     */
     public static List<String> readfile(String filepath, List<String> list) throws FileNotFoundException, IOException {
 
         try {

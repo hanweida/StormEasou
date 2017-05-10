@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,18 +29,15 @@ public class ClickLogSpout implements IRichSpout {
     private SpoutOutputCollector collector;
     private boolean complete = false;
 
-    @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         //To change body of implemented methods use File | Settings | File Templates.
         declarer.declare(new Fields("line"));
     }
 
-    @Override
     public Map<String, Object> getComponentConfiguration() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
         //To change body of implemented methods use File | Settings | File Templates.
         try {
@@ -50,22 +48,18 @@ public class ClickLogSpout implements IRichSpout {
         }
     }
 
-    @Override
     public void close() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
     public void activate() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
     public void deactivate() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
     public void nextTuple() {
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String str = null;
@@ -78,14 +72,13 @@ public class ClickLogSpout implements IRichSpout {
         }
     }
 
-    @Override
     public void ack(Object msgId) {
-        System.out.println("ok ： " + msgId);
+        System.out.println("------------------------ok ： " + msgId);
     }
 
-    @Override
     public void fail(Object msgId) {
-        System.out.println("fail ： " + msgId);
+        System.out.println("------------------------fail ： " + msgId);
+        collector.emit(new Values(msgId));
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

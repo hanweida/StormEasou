@@ -21,7 +21,13 @@ import java.util.Map;
  */
 public class AspCombinerBolt implements IRichBolt {
     private OutputCollector collector;
+    /**
+     * The Log.
+     */
     Logger Log = LoggerFactory.getLogger(AspCombinerBolt.class);
+    /**
+     * The Map.
+     */
     Map<String, ShowClickLog> map = null;
 
     @Override

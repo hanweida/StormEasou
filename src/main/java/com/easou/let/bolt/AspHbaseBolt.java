@@ -30,6 +30,13 @@ public class AspHbaseBolt extends BaseBasicBolt {
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    /**
+     * Do sum data boolean.
+     *
+     * @param input the input
+     * @return the boolean
+     */
     public boolean doSumData(Tuple input){
         System.out.println("Thread.currentThread()："+Thread.currentThread());
         ShowClickLog showClickLog = (ShowClickLog)input.getValue(1);

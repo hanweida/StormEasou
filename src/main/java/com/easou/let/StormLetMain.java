@@ -9,8 +9,12 @@ import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.spout.SchemeAsMultiScheme;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
-import com.easou.let.bolt.CdpHbaseBolt;
+import com.easou.let.bolt.AspHbaseBolt;
+import com.easou.let.bolt.AspNormalBolt;
+import com.easou.let.bolt.CdpDBBolt;
 import com.easou.let.bolt.CdpNormalBolt;
+import com.easou.let.spout.AspLogSpout;
+import com.easou.let.spout.ClickLogSpout;
 import com.easou.let.utils.PropertiesUtils;
 import org.apache.hadoop.conf.Configured;
 import storm.kafka.*;
@@ -36,43 +40,63 @@ public class StormLetMain extends Configured {
 
     /**
      * 运行(分为正常运行，和重跑数据)
-     * @param args
+     *
+     * @param args the input arguments
+     * @throws IOException          the io exception
+     * @throws InterruptedException the interrupted exception
      */
     public static void main(String[] args) throws IOException, InterruptedException {
         normalTask(args);
     }
 
-    //正常执行任务
+    /**
+     * Normal task.
+     *
+     * @param args the args
+     * @throws IOException          the io exception
+     * @throws InterruptedException the interrupted exception
+     */
+//正常执行任务
     public static void normalTask(String[] args) throws IOException, InterruptedException {
         Config conf = new Config();
         //获得Zookeeper Server
         String zks = propertiesUtils.getProperties("zookeeper_server");
-        String topic = "test1";
-        //获得Zookeeper 根目录
         String zRoot = propertiesUtils.getProperties("zookeeper_Root");
-        String id = "word";
+
+        String aspTopic = "asp_Log";
+        String cdpTopic = "cdp_Log";
+        String asp_id = "asp";
+        String cdp_id = "cdp";
 
         BrokerHosts brokerHosts = new ZkHosts(zks);
-        SpoutConfig spoutConfig = new SpoutConfig(brokerHosts, topic, zRoot, id);
-        spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
+        //Asp日志Kafka配置
+        SpoutConfig asp_spoutConfig = new SpoutConfig(brokerHosts, aspTopic, zRoot, asp_id);
+        asp_spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
+
+        //Cdp日志Kafka配置
+        SpoutConfig cdp_spoutConfig = new SpoutConfig(brokerHosts, aspTopic, zRoot, asp_id);
+        cdp_spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
 
 
         TopologyBuilder topologyBuilder = new TopologyBuilder();
-        //asp日志spout
+        //收取日志 KafkaAspSpout
+        topologyBuilder.setSpout("aspSpout", new KafkaSpout(asp_spoutConfig), 2);
+        //自定义Spout
         //topologyBuilder.setSpout("aspLogReader", new AspLogSpout(), 1);
         //asp日志normal bolt
-        //topologyBuilder.setBolt("aspNormalBolt", new AspNormalBolt(), 1).shuffleGrouping("aspLogReader");
+        topologyBuilder.setBolt("aspNormalBolt", new AspNormalBolt(), 1).localOrShuffleGrouping("aspSpout");
         //asp日志normal 合并bolt
         //topologyBuilder.setBolt("aspCombinerBolt", new AspCombinerBolt(), 10).fieldsGrouping("aspNormalBolt", new Fields("key"));
-        //topologyBuilder.setBolt("aspHBaseBolt", new AspHbaseBolt(), 3).fieldsGrouping("aspNormalBolt", new Fields("key"));
+        topologyBuilder.setBolt("aspHBaseBolt", new AspHbaseBolt(), 3).fieldsGrouping("aspNormalBolt", new Fields("key"));
 
         //cdp 日志spout 接收 Kakfa传来的日志
-        topologyBuilder.setSpout("cdpLogReader", new KafkaSpout(spoutConfig), 1);
+        //收取日志 KafkaCdpSpout
+        topologyBuilder.setSpout("cdpSpout", new KafkaSpout(cdp_spoutConfig), 2);
         //topologyBuilder.setSpout("cdpLogReader", new ClickLogSpout(), 1);
         //将cdp日志转为对象
-        topologyBuilder.setBolt("clickNormalBolt", new CdpNormalBolt(), 1).localOrShuffleGrouping("cdpLogReader");
+        topologyBuilder.setBolt("clickNormalBolt", new CdpNormalBolt(), 1).setNumTasks(2).localOrShuffleGrouping("cdpLogReader");
         //根据key 分组到一个任务中
-        topologyBuilder.setBolt("cdpHbaseBolt", new CdpHbaseBolt(), 1).fieldsGrouping("clickNormalBolt", new Fields("key"));
+        topologyBuilder.setBolt("cdpHbaseBolt", new CdpDBBolt(), 1).fieldsGrouping("clickNormalBolt", new Fields("key"));
 
         //类名称
         String name = StormLetMain.class.getSimpleName();

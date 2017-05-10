@@ -13,20 +13,41 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Date: 16-12-5
  * Time: 下午6:48
  * To change this template use File | Settings | File Templates.
+ *
+ * @param <T> the type parameter
  */
 public class TaskQueue<T extends Object> extends ArrayList {
 
+    /**
+     * The Count.
+     */
     AtomicInteger count = new AtomicInteger(0);
 
+    /**
+     * Add item.
+     *
+     * @param item the item
+     */
     public void addItem(T item){
         add(item);
     }
 
+    /**
+     * Pop item t.
+     *
+     * @return the t
+     */
     public T popItem(){
         int i = count.getAndIncrement();
         return i < size() ? (T)get(i) : null;
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws InterruptedException the interrupted exception
+     */
     public static void main(String[] args) throws InterruptedException {
         while (true){
             long startTime = System.nanoTime();

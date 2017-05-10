@@ -18,6 +18,12 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class FileWrite {
+    /**
+     * Wite file.
+     *
+     * @param str the str
+     * @throws IOException the io exception
+     */
     public static void witeFile(String str) throws IOException {
         File file = new File("D:\\easouLog\\cdplog/click_data.20161116");
         if(!file.exists()){
@@ -30,6 +36,12 @@ public class FileWrite {
         printWriter.flush();
     }
 
+    /**
+     * Wite files.
+     *
+     * @param list the list
+     * @throws IOException the io exception
+     */
     public static void witeFiles(List<String> list) throws IOException {
         for(String strings : list){
             FileWriter fileWriter = new FileWriter("D:\\easouLog\\cdplog\\click_data.20170109Log", true);
@@ -46,6 +58,12 @@ public class FileWrite {
         }
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws IOException the io exception
+     */
     public static void main(String[] args) throws IOException {
         List<String> lists = new ArrayList<String>();
 
@@ -54,6 +72,15 @@ public class FileWrite {
         witeFiles(list);
     }
 
+    /**
+     * Readfile list.
+     *
+     * @param filepath the filepath
+     * @param list     the list
+     * @return the list
+     * @throws FileNotFoundException the file not found exception
+     * @throws IOException           the io exception
+     */
     public static List<String> readfile(String filepath, List<String> list) throws FileNotFoundException, IOException {
 
         try {

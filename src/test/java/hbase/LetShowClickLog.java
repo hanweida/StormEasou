@@ -59,171 +59,381 @@ public class LetShowClickLog {
     //推广类型 1、搜索 2、展示
     private int promotionType;
 
+    /**
+     * Gets click.
+     *
+     * @return the click
+     */
     public int getClick() {
         return click;
     }
 
+    /**
+     * Sets click.
+     *
+     * @param click the click
+     */
     public void setClick(int click) {
         this.click = click;
     }
 
+    /**
+     * Gets click type.
+     *
+     * @return the click type
+     */
     public int getClickType() {
         return clickType;
     }
 
+    /**
+     * Sets click type.
+     *
+     * @param clickType the click type
+     */
     public void setClickType(int clickType) {
         this.clickType = clickType;
     }
 
+    /**
+     * Gets bid charge.
+     *
+     * @return the bid charge
+     */
     public int getBidCharge() {
         return bidCharge;
     }
 
+    /**
+     * Sets bid charge.
+     *
+     * @param bidCharge the bid charge
+     */
     public void setBidCharge(int bidCharge) {
         this.bidCharge = bidCharge;
     }
 
+    /**
+     * Gets charge.
+     *
+     * @return the charge
+     */
     public int getCharge() {
         return charge;
     }
 
+    /**
+     * Sets charge.
+     *
+     * @param charge the charge
+     */
     public void setCharge(int charge) {
         this.charge = charge;
     }
 
+    /**
+     * Gets cost date str.
+     *
+     * @return the cost date str
+     */
     public String getCostDateStr() {
         return costDateStr;
     }
 
+    /**
+     * Sets cost date str.
+     *
+     * @param costDateStr the cost date str
+     */
     public void setCostDateStr(String costDateStr) {
         this.costDateStr = costDateStr;
     }
 
+    /**
+     * Gets dept.
+     *
+     * @return the dept
+     */
     public int getDept() {
         return dept;
     }
 
+    /**
+     * Sets dept.
+     *
+     * @param dept the dept
+     */
     public void setDept(int dept) {
         this.dept = dept;
     }
 
+    /**
+     * Gets cid.
+     *
+     * @return the cid
+     */
     public String getCid() {
         return cid;
     }
 
+    /**
+     * Sets cid.
+     *
+     * @param cid the cid
+     */
     public void setCid(String cid) {
         this.cid = cid;
     }
 
+    /**
+     * Gets mpay.
+     *
+     * @return the mpay
+     */
     public int getMpay() {
         return mpay;
     }
 
+    /**
+     * Sets mpay.
+     *
+     * @param mpay the mpay
+     */
     public void setMpay(int mpay) {
         this.mpay = mpay;
     }
 
+    /**
+     * Gets media type.
+     *
+     * @return the media type
+     */
     public int getMediaType() {
         return mediaType;
     }
 
+    /**
+     * Sets media type.
+     *
+     * @param mediaType the media type
+     */
     public void setMediaType(int mediaType) {
         this.mediaType = mediaType;
     }
 
+    /**
+     * Gets charge type.
+     *
+     * @return the charge type
+     */
     public int getChargeType() {
         return chargeType;
     }
 
+    /**
+     * Sets charge type.
+     *
+     * @param chargeType the charge type
+     */
     public void setChargeType(int chargeType) {
         this.chargeType = chargeType;
     }
 
+    /**
+     * Gets pay type.
+     *
+     * @return the pay type
+     */
     public int getPayType() {
         return payType;
     }
 
+    /**
+     * Sets pay type.
+     *
+     * @param payType the pay type
+     */
     public void setPayType(int payType) {
         this.payType = payType;
     }
 
+    /**
+     * Gets promotion type.
+     *
+     * @return the promotion type
+     */
     public int getPromotionType() {
         return promotionType;
     }
 
+    /**
+     * Sets promotion type.
+     *
+     * @param promotionType the promotion type
+     */
     public void setPromotionType(int promotionType) {
         this.promotionType = promotionType;
     }
 
 
+    /**
+     * Gets show num.
+     *
+     * @return the show num
+     */
     public int getShowNum() {
         return showNum;
     }
 
+    /**
+     * Sets show num.
+     *
+     * @param showNum the show num
+     */
     public void setShowNum(int showNum) {
         this.showNum = showNum;
     }
 
+    /**
+     * Gets wordid.
+     *
+     * @return the wordid
+     */
     public String getWordid() {
         return wordid;
     }
 
+    /**
+     * Sets wordid.
+     *
+     * @param wordid the wordid
+     */
     public void setWordid(String wordid) {
         this.wordid = wordid;
     }
 
+    /**
+     * Gets winfoid.
+     *
+     * @return the winfoid
+     */
     public String getWinfoid() {
         return winfoid;
     }
 
+    /**
+     * Sets winfoid.
+     *
+     * @param winfoid the winfoid
+     */
     public void setWinfoid(String winfoid) {
         this.winfoid = winfoid;
     }
 
+    /**
+     * Gets ad type.
+     *
+     * @return the ad type
+     */
     public String getAdType() {
         return adType;
     }
 
+    /**
+     * Sets ad type.
+     *
+     * @param adType the ad type
+     */
     public void setAdType(String adType) {
         this.adType = adType;
     }
 
+    /**
+     * Gets ad index.
+     *
+     * @return the ad index
+     */
     public String getAdIndex() {
         return adIndex;
     }
 
+    /**
+     * Sets ad index.
+     *
+     * @param adIndex the ad index
+     */
     public void setAdIndex(String adIndex) {
         this.adIndex = adIndex;
     }
 
+    /**
+     * Gets userid.
+     *
+     * @return the userid
+     */
     public String getUserid() {
         return userid;
     }
 
+    /**
+     * Sets userid.
+     *
+     * @param userid the userid
+     */
     public void setUserid(String userid) {
         this.userid = userid;
     }
 
+    /**
+     * Gets planid.
+     *
+     * @return the planid
+     */
     public String getPlanid() {
         return planid;
     }
 
+    /**
+     * Sets planid.
+     *
+     * @param planid the planid
+     */
     public void setPlanid(String planid) {
         this.planid = planid;
     }
 
+    /**
+     * Gets ideaid.
+     *
+     * @return the ideaid
+     */
     public String getIdeaid() {
         return ideaid;
     }
 
+    /**
+     * Sets ideaid.
+     *
+     * @param ideaid the ideaid
+     */
     public void setIdeaid(String ideaid) {
         this.ideaid = ideaid;
     }
 
+    /**
+     * Gets unitid.
+     *
+     * @return the unitid
+     */
     public String getUnitid() {
         return unitid;
     }
 
+    /**
+     * Sets unitid.
+     *
+     * @param unitid the unitid
+     */
     public void setUnitid(String unitid) {
         this.unitid = unitid;
     }

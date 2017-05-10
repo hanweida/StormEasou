@@ -17,6 +17,12 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class Test {
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws IOException the io exception
+     */
     public static void main(String[] args) throws IOException {
         File file= new File("D:\\join0116\\asp.temp.20170116");
         FileReader fileReader = new FileReader(file);

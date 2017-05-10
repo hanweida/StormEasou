@@ -21,14 +21,28 @@ import java.util.List;
  */
 public class HBaseDao {
     private static HBaseDao hBaseDao = null;
+    /**
+     * The Admin.
+     */
     Admin admin = null;
     private HBaseDao(){}
+
+    /**
+     * Get instance h base dao.
+     *
+     * @return the h base dao
+     */
     public static HBaseDao getInstance(){
         hBaseDao = new HBaseDao();
         return hBaseDao;
     }
 
-    // Hbase获取所有的表信息
+    /**
+     * Gets all tables.
+     *
+     * @return the all tables
+     */
+// Hbase获取所有的表信息
     public List getAllTables() {
         List<String> tables = null;
         if (admin != null) {
@@ -49,9 +63,10 @@ public class HBaseDao {
 
     /**
      * 添加表
-     * @param hBaseAdmin
-     * @param table
-     * @throws IOException
+     *
+     * @param hBaseAdmin the h base admin
+     * @param table      the table
+     * @throws IOException the io exception
      */
     public void addTable(Admin hBaseAdmin, String table) throws IOException{
         TableName tableName = TableName.valueOf(table);
@@ -65,9 +80,10 @@ public class HBaseDao {
 
     /**
      * 删除表
-     * @param hBaseAdmin
-     * @param tableName
-     * @throws IOException
+     *
+     * @param hBaseAdmin the h base admin
+     * @param tableName  the table name
+     * @throws IOException the io exception
      */
     public void deleteTables(HBaseAdmin hBaseAdmin, String tableName) throws IOException{
         hBaseAdmin.disableTable(tableName);
@@ -76,9 +92,10 @@ public class HBaseDao {
 
     /**
      * 删除表通过 TableName 类
-     * @param hBaseAdmin
-     * @param tableName
-     * @throws IOException
+     *
+     * @param hBaseAdmin the h base admin
+     * @param tableName  the table name
+     * @throws IOException the io exception
      */
     public void deleteTableByTableName(HBaseAdmin hBaseAdmin, String tableName) throws IOException{
         TableName tableName1 = TableName.valueOf(tableName);
@@ -88,9 +105,11 @@ public class HBaseDao {
 
     /**
      * 是否存在表
-     * @param hBaseAdmin
-     * @param tableName
-     * @throws IOException
+     *
+     * @param hBaseAdmin the h base admin
+     * @param tableName  the table name
+     * @return the boolean
+     * @throws IOException the io exception
      */
     public boolean existsTable(Admin hBaseAdmin, String tableName) throws IOException{
         boolean isExists = hBaseAdmin.tableExists(TableName.valueOf(tableName));
@@ -100,12 +119,13 @@ public class HBaseDao {
 
     /**
      * 添加数据
-     * @param tableName
-     * @param rowKey
-     * @param value
-     * @param family
-     * @param qualify
-     * @throws IOException
+     *
+     * @param tableName the table name
+     * @param rowKey    the row key
+     * @param value     the value
+     * @param family    the family
+     * @param qualify   the qualify
+     * @throws IOException the io exception
      */
     public void putDatas(String tableName, String rowKey, String value, byte [] family, byte [] qualify) throws IOException{
         Table table = null;
@@ -120,12 +140,13 @@ public class HBaseDao {
 
     /**
      * 查询数据
-     * @param tableName
-     * @param rowKey
-     * @param family
-     * @param qualify
-     * @return
-     * @throws IOException
+     *
+     * @param tableName the table name
+     * @param rowKey    the row key
+     * @param family    the family
+     * @param qualify   the qualify
+     * @return byte [ ]
+     * @throws IOException the io exception
      */
     public byte[] selectDatas(String tableName, String rowKey, byte [] family, byte [] qualify) throws IOException{
         if(StringUtils.isNotEmpty(tableName) && StringUtils.isNotEmpty(rowKey) && (family.length > 0) && (qualify.length > 0) ){
