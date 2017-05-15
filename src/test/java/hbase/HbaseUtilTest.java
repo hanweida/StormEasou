@@ -1,5 +1,7 @@
 package hbase;
 
+import com.easou.let.utils.HBaseUtils;
+import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Test;
 
@@ -38,6 +40,8 @@ public class HbaseUtilTest {
         /*HBaseDao hBaseDao = HBaseDao.getInstance();
         byte[] showNumValue = hBaseDao.selectDatas("t_showclicklog", "20161109005015001633180036491000024039325009232361000962086000000000962086001", "info".getBytes(), EasouConstants.HBASE_SHOWNUM.getBytes());
         System.out.println(Bytes.toInt(showNumValue));*/
-        Bytes.toString(null);
+        HBaseUtils hBaseUtils = HBaseUtils.getInstance();
+        Connection connection = hBaseUtils.getHBaseConn();
+        hBaseUtils.putDatas(connection, "test", "1");
     }
 }

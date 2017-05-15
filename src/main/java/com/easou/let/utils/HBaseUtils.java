@@ -80,9 +80,12 @@ public class HBaseUtils {
      * @params:[hBaseAdmin, table]
      * @returns:void
      */
-    public void addTable(Admin hBaseAdmin, String table) throws IOException{
+    public void createTable(Admin hBaseAdmin, String table, List<String> familyList) throws IOException{
         TableName tableName = TableName.valueOf(table);
         HTableDescriptor hTableDescriptor = new HTableDescriptor(tableName);
+        for(String family : familyList){
+
+        }
         HColumnDescriptor hColumnDescriptor = new HColumnDescriptor("info");
         hTableDescriptor.addFamily(hColumnDescriptor.setCompressionType(Compression.Algorithm.NONE));
         if(!existsTable(hBaseAdmin, table)){
@@ -138,9 +141,36 @@ public class HBaseUtils {
         byte [] family = Bytes.toBytes("date");
         Table Table = hConnection.getTable(tableName1);
         for(int i = 0 ;i < rows.length ; i++){
-            System.out.println("==============" + rows[i]);
             byte [] rowkey = rows[i].getBytes();
             Put put = new Put(rowkey);
+            for(int j = 0 ; j < column.length; j++){
+                byte [] qualifier = Bytes.toBytes(column[j]);
+                byte [] value = Bytes.toBytes(values[i][j]);
+                put.add(family, qualifier, value);
+            }
+            Table.put(put);
+        }
+        Table.close();
+    }
+
+    /**
+     * 添加数据
+     * @param hConnection
+     * @param tableName
+     */
+    public void putDatas(Connection hConnection, String tableName, String str) throws IOException{
+
+        String [] rows = {"0000_000_00000","1111_111_11111"};
+        String [] column = {"userid", "mmid", "date"};
+        String [][] values = {{str, str, str}, {str, str, str}};
+        TableName tableName1 = TableName.valueOf(tableName);
+        Table Table = hConnection.getTable(tableName1);
+
+        byte [] family = Bytes.toBytes("info");
+        for(int i = 0 ;i < rows.length ; i++){
+            byte [] rowkey = rows[i].getBytes();
+            Put put = new Put(rowkey);
+
             for(int j = 0 ; j < column.length; j++){
                 byte [] qualifier = Bytes.toBytes(column[j]);
                 byte [] value = Bytes.toBytes(values[i][j]);

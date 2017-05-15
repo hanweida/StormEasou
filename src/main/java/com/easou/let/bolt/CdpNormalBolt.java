@@ -12,6 +12,8 @@ import backtype.storm.tuple.Values;
 import com.easou.let.pojo.ShowClickLog;
 import com.easou.let.utils.SimpleDateUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,7 +30,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class CdpNormalBolt implements IRichBolt {
-
+    Logger logger = LoggerFactory.getLogger(CdpNormalBolt.class);
     private OutputCollector collector;
     private SimpleDateFormat ymd = new SimpleDateFormat("yyyyMMdd");
     private SimpleDateFormat ymd_ = new SimpleDateFormat("yyyy-MM-dd");
@@ -41,10 +43,11 @@ public class CdpNormalBolt implements IRichBolt {
     public void execute(Tuple input) {
         if(input.getSourceComponent().equals(Constants.SYSTEM_COMPONENT_ID) && input.getSourceStreamId().equals(Constants.SYSTEM_TICK_STREAM_ID)){
             System.out.println(SimpleDateUtils.getCurrentTime());
+            logger.info("------------------------------------------CdpNormalBolt execute");
         } else {
             String line = input.getString(0);
             MessageId messageId = input.getMessageId();
-
+            System.out.println(line);
             ShowClickLog showClickLog = cdpParge(line);
             if(null != showClickLog){
                 collector.emit(input, new Values(showClickLog.toKeyValue(), showClickLog));

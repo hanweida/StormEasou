@@ -6,8 +6,11 @@ import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
 import com.easou.let.pojo.*;
+import com.easou.let.utils.HBaseUtils;
 import com.easou.let.utils.PropertiesUtils;
 import com.easou.let.utils.SimpleDateUtils;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +43,8 @@ public class CdpDBBolt implements IRichBolt {
 
     private TaskQueue<ShowClickLog> taskQueue = null;
     private OutputCollector collector;
+    private HBaseUtils hBaseUtils = HBaseUtils.getInstance();
+
 
     /**
      * Wite file.
@@ -49,6 +54,7 @@ public class CdpDBBolt implements IRichBolt {
     }
 
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        LOG.info("-----------------------------CdpDBBolt prepare");
         //To change body of implemented methods use File | Settings | File Templates.
         this.collector = collector;
         cleaning = true;
@@ -164,6 +170,18 @@ public class CdpDBBolt implements IRichBolt {
     }
 
     /**
+     * Wite file.
+     *
+     * @param str the str
+     * @throws IOException the io exception
+     */
+    public void witeHBase(String str) throws IOException {
+        Connection connection = hBaseUtils.getHBaseConn();
+        Admin admin = connection.getAdmin();
+        hBaseUtils.putDatas(connection, "test", str);
+    }
+
+    /**
      * Memqach data.
      * 该方法为将数据整合到内存中 ，将相同的key 合并数据，如果正在数据处理期间（定时器启动时），数据将缓存到cachList中
      *
@@ -190,6 +208,7 @@ public class CdpDBBolt implements IRichBolt {
                     if(null == memcachMap.get(key)){
                         memcachMap.put(key, showClickLog1);
                     } else {
+                        memShowClick = memcachMap.get(key);
                         memShowClick.setClick(showClickLog1.getClick() + memShowClick.getClick());
                         memShowClick.setCharge(showClickLog1.getCharge() + memShowClick.getCharge());
                         memShowClick.setBidCharge(showClickLog1.getBidCharge() + memShowClick.getBidCharge());
