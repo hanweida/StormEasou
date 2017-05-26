@@ -11,6 +11,7 @@ import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.Increment;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Table;
@@ -19,7 +20,10 @@ import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by ES-BF-IT-126 on 2017/5/10.
@@ -190,11 +194,60 @@ public class HBaseUtils {
     public void selectDatas(Connection hConnection, String tableName) throws IOException{
         TableName tableName1 = TableName.valueOf(tableName);
         Table table = hConnection.getTable(tableName1);
-        Get get = new Get("20161031_2_1_1_4560_1299".getBytes());
+        Get get = new Get("counts".getBytes());
         Result result = table.get(get);
         List list = result.listCells();
         List<Cell> listCell =  result.getColumnCells("info".getBytes(),"shownum".getBytes());
         System.out.println(Bytes.toString(result.getValue("info".getBytes(),"shownum".getBytes())));
         //System.out.println(listCell.get(0));
+    }
+
+
+    /**
+     * 多计数器，原子性添加数据
+     * @author:ES-BF-IT-126
+     * @method:incDatas
+     * @date:Date 2017/5/17
+     * @params:[hConnection, tableName, row, faimlycolum]
+     * @returns:void
+     */
+    public void incDatas(Connection hConnection , String tableName, String row, Map<String, Map<String, Long>> faimlycolum) throws IOException {
+        Table table = hConnection.getTable(TableName.valueOf(tableName));
+        // IncrementMultipleExample
+        Increment increment = new Increment(Bytes.toBytes(row));
+        Set<String> set = faimlycolum.keySet();
+        Iterator<String> iterator = set.iterator();
+        String columnFamily = "";
+        while (iterator.hasNext()){
+            columnFamily = iterator.next();
+            Map<String, Long> qualifierMap = faimlycolum.get(columnFamily);
+            Set<String> qualifierKeySet = qualifierMap.keySet();
+            for(String qualifier : qualifierKeySet){
+                increment.addColumn(Bytes.toBytes(columnFamily), Bytes.toBytes(qualifier), qualifierMap.get(qualifier));
+                //System.out.println(""+qualifierMap.get(qualifier).byteValue());
+                //qualifierMap.get(qualifier).byteValue()
+            }
+        }
+
+        Result result1 = table.increment(increment);
+        for (Cell cell : result1.rawCells()) {
+            System.out.println(Thread.currentThread().getName()+"Cell: " + cell +
+                    " Value: " + Bytes.toLong(cell.getValueArray(), cell.getValueOffset(),
+                    cell.getValueLength())); // co IncrementMultipleExample-3-Dump1 Print the cell and returned counter value.
+        }
+        table.close();
+        hConnection.close();
+    }
+
+    public void getIncDatas(Connection hConnection, String tableName, String row) throws IOException{
+        TableName tableName1 = TableName.valueOf(tableName);
+        Table table = hConnection.getTable(tableName1);
+        Get get = new Get("counts".getBytes());
+        Result result = table.get(get);
+        for (Cell cell : result.rawCells()) {
+            System.out.println("Cell: " + cell +
+                    " Value: " + Bytes.toLong(cell.getValueArray(), cell.getValueOffset(),
+                    cell.getValueLength())); // co IncrementMultipleExample-3-Dump1 Print the cell and returned counter value.
+        }
     }
 }

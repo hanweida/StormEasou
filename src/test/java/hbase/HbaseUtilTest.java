@@ -6,6 +6,9 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,5 +46,41 @@ public class HbaseUtilTest {
         HBaseUtils hBaseUtils = HBaseUtils.getInstance();
         Connection connection = hBaseUtils.getHBaseConn();
         hBaseUtils.putDatas(connection, "test", "1");
+    }
+
+    @Test
+    public void testIncMulti() throws IOException, InterruptedException {
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                HBaseUtils hBaseUtils = HBaseUtils.getInstance();
+                try {
+                    Connection connection = hBaseUtils.getHBaseConn();
+                    Map<String, Map<String, Long>> familyColumn = new HashMap<String, Map<String, Long>>();
+                    Map<String, Long> qualifier = new HashMap<String, Long>();
+                    qualifier.put("show", 1l);
+                    familyColumn.put("info", qualifier);
+                    hBaseUtils.incDatas(connection, "test", "counts" , familyColumn);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } ;
+
+
+        for(int i = 0 ; i < 100; i ++){
+            Thread thread = new Thread(runnable);
+            thread.start();
+        }
+        Thread.sleep(10000000);
+
+    }
+
+    @Test
+    public void getDatas() throws IOException {
+        HBaseUtils hBaseUtils = HBaseUtils.getInstance();
+        Connection connection = hBaseUtils.getHBaseConn();
+        hBaseUtils.getIncDatas(connection, "test", "counts");
     }
 }

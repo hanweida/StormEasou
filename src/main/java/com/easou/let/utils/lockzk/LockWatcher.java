@@ -33,24 +33,23 @@ public class LockWatcher implements Watcher {
         this.doTemplate = doTemplate;
     }
 
-    @Override
     public void process(WatchedEvent watchedEvent) {
         if(watchedEvent.getType() == Event.EventType.NodeDeleted  && distributedLock.getWaitePath().equals(watchedEvent.getPath())){
             //监控执行线程，如果上一个节点没了，则判断是否是最小节点，如果是的话，则执行操作
             logger.info("前面的弟兄不见了，咱可以看看去");
-                try {
-                    if(distributedLock.checkMinPath()){
-                        logger.info(distributedLock.subCurrentPath+"开工，干活！Wathcer");
-                        //最小节点可以执行，
-                        excute();
-                        logger.info(distributedLock.subCurrentPath+"活干完了，收起禁止通行标，撤了！Wathcer");
-                        distributedLock.unLock();
-                    }
-                } catch (KeeperException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            try {
+                if(distributedLock.checkMinPath()){
+                    logger.info(distributedLock.subCurrentPath+"开工，干活！Wathcer");
+                    //最小节点可以执行，
+                    excute();
+                    logger.info(distributedLock.subCurrentPath+"活干完了，收起禁止通行标，撤了！Wathcer");
+                    distributedLock.unLock();
                 }
+            } catch (KeeperException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

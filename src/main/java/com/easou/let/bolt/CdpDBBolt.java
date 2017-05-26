@@ -43,7 +43,6 @@ public class CdpDBBolt implements IRichBolt {
 
     private TaskQueue<ShowClickLog> taskQueue = null;
     private OutputCollector collector;
-    private HBaseUtils hBaseUtils = HBaseUtils.getInstance();
 
 
     /**
@@ -63,7 +62,7 @@ public class CdpDBBolt implements IRichBolt {
         taskQueue = new TaskQueue<ShowClickLog>();
 
         Timer timer = new Timer();
-        timer.schedule(new CdpDBBolt.saveTimer(), new Date(), 30000);
+        timer.schedule(new CdpDBBolt.saveTimer(), new Date(), 3000);
     }
 
     /**
@@ -95,10 +94,11 @@ public class CdpDBBolt implements IRichBolt {
                                 break;
                             } else {
                                 if(showClickLog.getUserId() != 8704){
-                                    System.out.println(showClickLog.getCharge());
+                                    //System.out.println(showClickLog.getCharge());
+                                    //LOG.info("---------------------------" + showClickLog.getCharge());
                                     try {
                                         //持久化数据
-                                        witeData(showClickLog.getCharge() + "");
+                                        witeHBase(showClickLog.getCharge());
                                     } catch (IOException e) {
                                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                                     }
@@ -175,10 +175,15 @@ public class CdpDBBolt implements IRichBolt {
      * @param str the str
      * @throws IOException the io exception
      */
-    public void witeHBase(String str) throws IOException {
+    public void witeHBase(int str) throws IOException {
+        HBaseUtils hBaseUtils = HBaseUtils.getInstance();
         Connection connection = hBaseUtils.getHBaseConn();
-        Admin admin = connection.getAdmin();
-        hBaseUtils.putDatas(connection, "test", str);
+        Map<String, Map<String, Long>> familyColumn = new HashMap<String, Map<String, Long>>();
+        Map<String, Long> qualifier = new HashMap<String, Long>();
+        qualifier.put("show", (long)str);
+        //System.out.println((long)str);
+        familyColumn.put("info", qualifier);
+        hBaseUtils.incDatas(connection, "test", "counts" , familyColumn);
     }
 
     /**

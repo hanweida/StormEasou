@@ -1,7 +1,11 @@
 package com.easou.let;
 
 import backtype.storm.Config;
+import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
+import backtype.storm.generated.AlreadyAliveException;
+import backtype.storm.generated.AuthorizationException;
+import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.spout.SchemeAsMultiScheme;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
@@ -93,12 +97,13 @@ public class StormLetMain extends Configured {
         topologyBuilder.setSpout("cdpSpout", new KafkaSpout(cdp_spoutConfig), 2);
         //topologyBuilder.setSpout("cdpLogReader", new ClickLogSpout(), 1);
         //将cdp日志转为对象
-        topologyBuilder.setBolt("clickNormalBolt", new CdpNormalBolt(), 1).setNumTasks(2).localOrShuffleGrouping("cdpLogReader");
+        topologyBuilder.setBolt("clickNormalBolt", new CdpNormalBolt(), 1).setNumTasks(2).localOrShuffleGrouping("cdpSpout");
         //根据key 分组到一个任务中
         topologyBuilder.setBolt("cdpHbaseBolt", new CdpDBBolt(), 1).fieldsGrouping("clickNormalBolt", new Fields("key"));
 
         //类名称
-        String name = StormLetMain.class.getSimpleName();
+//        String name = StormLetMain.class.getSimpleName();
+//        Config conf = new Config();
 //        if(args != null && args.length > 0){
 //            //Nimbus host name passed from command line
 //            conf.put(Config.NIMBUS_HOST, args[0]);
@@ -131,6 +136,7 @@ public class StormLetMain extends Configured {
 //            //cluster.shutdown();
 //        }
 
+        //本地上传topology到集群
         Config conf = new Config();
         conf.setDebug(true);
         conf.setNumWorkers(3);

@@ -73,7 +73,8 @@ public class ClickLogSpout implements IRichSpout {
     }
 
     public void ack(Object msgId) {
-        System.out.println("------------------------ok ： " + msgId);
+
+        //System.out.println("------------------------ok ： " + msgId);
     }
 
     public void fail(Object msgId) {

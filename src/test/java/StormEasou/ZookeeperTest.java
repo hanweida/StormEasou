@@ -47,12 +47,12 @@ public class ZookeeperTest {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    new LockService().doService(new DoTemplate() {
-                        @Override
-                        public void excute() {
-                            logger.info(Thread.currentThread().getName()+"执行成功");
-                        }
-                    });
+                new LockService().doService(new DoTemplate() {
+                    @Override
+                    public void excute() {
+                        logger.info(Thread.currentThread().getName()+"执行成功");
+                    }
+                });
                 }
             }).start();
         }
