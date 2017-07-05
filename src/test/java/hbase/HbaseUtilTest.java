@@ -6,6 +6,8 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +71,7 @@ public class HbaseUtilTest {
         } ;
 
 
-        for(int i = 0 ; i < 100; i ++){
+        for(int i = 0 ; i < 1000; i ++){
             Thread thread = new Thread(runnable);
             thread.start();
         }
@@ -82,5 +84,13 @@ public class HbaseUtilTest {
         HBaseUtils hBaseUtils = HBaseUtils.getInstance();
         Connection connection = hBaseUtils.getHBaseConn();
         hBaseUtils.getIncDatas(connection, "test", "counts");
+    }
+
+    @Test
+    public void getDates(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        Date date = new Date();
+        date.setTime(Long.valueOf("1495641208032"));
+        System.out.println(sdf.format(date));
     }
 }

@@ -2,12 +2,13 @@ package com.easou.let.pojo;
 
 import com.easou.let.config.EasouConstants;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * 展现日志/点击日志数据实体
  */
-public class ShowClickLog {
+public class ShowClickLog implements Serializable{
 	private int	id	;//	自增id	
 	private Date costDate	;//	消费日期	
 	private int	userId	;//	用户id	

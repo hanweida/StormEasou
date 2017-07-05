@@ -39,7 +39,7 @@ public class AbstractZookeeper implements Watcher {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-        logger.info("Zookeeper connected success"+Thread.currentThread().getName());
+        //logger.info("Zookeeper connected success"+Thread.currentThread().getName());
         return zooKeeper;
     }
 

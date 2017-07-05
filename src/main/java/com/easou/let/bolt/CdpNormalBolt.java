@@ -3,8 +3,10 @@ package com.easou.let.bolt;
 import backtype.storm.Constants;
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
+import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.topology.base.BaseBasicBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.MessageId;
 import backtype.storm.tuple.Tuple;
@@ -29,32 +31,38 @@ import java.util.Map;
  * Time: 上午11:28
  * To change this template use File | Settings | File Templates.
  */
-public class CdpNormalBolt implements IRichBolt {
-    Logger logger = LoggerFactory.getLogger(CdpNormalBolt.class);
+public class CdpNormalBolt extends BaseBasicBolt{
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("operation");
+
     private OutputCollector collector;
     private SimpleDateFormat ymd = new SimpleDateFormat("yyyyMMdd");
     private SimpleDateFormat ymd_ = new SimpleDateFormat("yyyy-MM-dd");
+    int count  = 0;
 
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         //To change body of implemented methods use File | Settings | File Templates.
         this.collector = collector;
     }
 
-    public void execute(Tuple input) {
+    @Override
+    public void execute(Tuple input, BasicOutputCollector collector) {
         if(input.getSourceComponent().equals(Constants.SYSTEM_COMPONENT_ID) && input.getSourceStreamId().equals(Constants.SYSTEM_TICK_STREAM_ID)){
             System.out.println(SimpleDateUtils.getCurrentTime());
             logger.info("------------------------------------------CdpNormalBolt execute");
         } else {
             String line = input.getString(0);
+            logger.info("CdpNormalBolt line num");
             MessageId messageId = input.getMessageId();
-            System.out.println(line);
+            //System.out.println(line);
             ShowClickLog showClickLog = cdpParge(line);
             if(null != showClickLog){
-                collector.emit(input, new Values(showClickLog.toKeyValue(), showClickLog));
+                logger.info("CdpNormalBolt ShowClickLog IS_NOT_NULL");
+                collector.emit(new Values(showClickLog.toKeyValue(), showClickLog));
+            } else {
+                logger.info("CdpNormalBolt ShowClickLog NULL");
+                logger.info("CdpNormalBolt Log "+ line);
             }
         }
-        collector.ack(input);
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void cleanup() {
@@ -80,7 +88,6 @@ public class CdpNormalBolt implements IRichBolt {
         if(StringUtils.isEmpty(line) || "@EE@".equals(line)){
             return null;
         }
-
         String[] array = line.split("\t",10000);
         //默认当前版本长度
         int maxItemCount = 26;
@@ -98,11 +105,12 @@ public class CdpNormalBolt implements IRichBolt {
         ShowClickLog showClickLog = new ShowClickLog();
 
         //日志日期
+        String str = getShortFormatDate(Long.valueOf(array[21]));
         Date costDate = new Date(Long.valueOf(array[21]));
         String dateStr = SimpleDateUtils.DateToString(costDate);
-//        if(!"2017-01-09".equals(dateStr)){
-//            return null;
-//        }
+        if(!"2017-05-25".equals(dateStr)){
+            return null;
+        }
         showClickLog.setClickType(Integer.valueOf(array[3]));
         showClickLog.setUserId(Integer.valueOf(array[4]));
         showClickLog.setPlanId(Integer.valueOf(array[5]));
@@ -147,6 +155,7 @@ public class CdpNormalBolt implements IRichBolt {
             showClickLog.setChargeType(array[45]);
         }
         return showClickLog;
+        //return null;
     }
 
     /**
@@ -180,5 +189,15 @@ public class CdpNormalBolt implements IRichBolt {
         printWriter.flush();
     }
 
+    public static String getShortFormatDate(long time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        Date date = new Date();
+        date.setTime(time);
+        return sdf.format(date);
+    }
+
+    public static void main(String[] args) {
+
+    }
 
 }

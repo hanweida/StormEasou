@@ -76,7 +76,7 @@ public class DistributedLock{
         if(StringUtils.isNotEmpty(subLockPath)){
             try {
                 subCurrentPath = zooKeeper.create(subLockPath, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL  );
-                logger.info("getLock subCurrentPath" + subCurrentPath);
+                //logger.info("getLock subCurrentPath" + subCurrentPath);
                 //如果是最小节点，则返回true，否则返回false
                 if(checkMinPath()){
                     return true;
@@ -124,11 +124,13 @@ public class DistributedLock{
             Collections.sort(childList);
             int index = childList.indexOf(subCurrentPath.substring(lockPath.length() + 1));
             switch (index){
-                case -1 : logger.info("该节点消失");return false;
+                case -1 :
+                    //logger.info("该节点消失");
+                    return false;
                 case 0 : return true;
                 default:
                     this.waitePath = lockPath+"/"+childList.get(index-1);
-                    logger.info("获取排在我前面的节点"+waitePath);
+                    //logger.info("获取排在我前面的节点"+waitePath);
                     try{
                         zooKeeper.getData(waitePath, watcher, null);
                         return false;

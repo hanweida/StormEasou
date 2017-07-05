@@ -39,13 +39,13 @@ public class LockService {
                 if(null == zooKeeper.exists(selfLockPath, lockWatcher)){
                     //如果无根目录，则建立永久根目录
                     String path = zooKeeper.create(selfLockPath, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-                    logger.info("create lockRootPath success：" + path);
+                    //logger.info("create lockRootPath success：" + path);
                 }
             }
             if(distributedLock.getLock()){
-                logger.info(distributedLock.subCurrentPath+"开工，干活！ Service");
+                //logger.info(distributedLock.subCurrentPath+"开工，干活！ Service");
                 lockWatcher.excute();
-                logger.info(distributedLock.subCurrentPath+"活干完了，收起禁止通行标，撤了！Service");
+                //logger.info(distributedLock.subCurrentPath+"活干完了，收起禁止通行标，撤了！Service");
                 distributedLock.unLock();
             }
         } catch (KeeperException e) {
