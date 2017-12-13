@@ -47,7 +47,6 @@ public class HbaseUtilTest {
         System.out.println(Bytes.toInt(showNumValue));*/
         HBaseUtils hBaseUtils = HBaseUtils.getInstance();
         Connection connection = hBaseUtils.getHBaseConn();
-        hBaseUtils.putDatas(connection, "test", "1");
     }
 
     @Test
@@ -92,5 +91,19 @@ public class HbaseUtilTest {
         Date date = new Date();
         date.setTime(Long.valueOf("1495641208032"));
         System.out.println(sdf.format(date));
+    }
+
+    @Test
+    public void queryAllDataByTable() throws IOException {
+        HBaseUtils hBaseUtils = HBaseUtils.getInstance();
+        Connection connection = hBaseUtils.getHBaseConn();
+        hBaseUtils.queryAllDatas(connection, "test");
+    }
+
+    @Test
+    public void queryAllDataByRow() throws IOException {
+        HBaseUtils hBaseUtils = HBaseUtils.getInstance();
+        Connection connection = hBaseUtils.getHBaseConn();
+        hBaseUtils.queryTableByRowKey(connection, "test", "2017-05-25_10545_164700_3687089_24894761_9292955_5899797_1_0_0");
     }
 }

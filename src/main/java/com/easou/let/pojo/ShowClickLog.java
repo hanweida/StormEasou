@@ -645,6 +645,8 @@ public class ShowClickLog implements Serializable{
 	 */
 	public String toKeyValue(){
         StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(this.getCostDateString());
+		stringBuilder.append("_");
         stringBuilder.append(this.getUserId());
         stringBuilder.append("_");
         stringBuilder.append(this.getPlanId());
@@ -658,8 +660,6 @@ public class ShowClickLog implements Serializable{
         stringBuilder.append(this.getBidWordId());
         stringBuilder.append("_");
         stringBuilder.append(this.getClickType());
-        stringBuilder.append("_");
-        stringBuilder.append(this.getCostDateString());
         stringBuilder.append("_");
         stringBuilder.append(this.getPayType());
         stringBuilder.append("_");
